@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portofolio Saya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            900: '#0a0f1d',
+                            800: '#111827',
+                            700: '#1f293d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-navy-900 text-gray-100 font-sans antialiased min-h-screen">
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 bg-navy-900/80 backdrop-blur border-b border-gray-800">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <span class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-indigo-500 bg-clip-text text-transparent">Portofolio.</span>
+            <div class="space-x-6 text-sm">
+                <a href="#tentang" class="hover:text-cyan-400 transition">Tentang</a>
+                <a href="#keahlian" class="hover:text-cyan-400 transition">Keahlian</a>
+                <a href="#proyek" class="hover:text-cyan-400 transition">Proyek</a>
+                <a href="#kontak" class="hover:text-cyan-400 transition">Kontak</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="max-w-6xl mx-auto px-6 py-20 md:py-32 flex flex-col md:flex-row items-center justify-between">
+        <div class="md:w-1/2 space-y-6">
+            <span class="px-3 py-1 text-xs font-mono uppercase tracking-wider bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full">Halo, Selamat Datang</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">Saya <span class="text-cyan-400">Developer</span> & Kreator Teknologi</h1>
+            <p class="text-gray-400 text-lg">Membangun solusi digital, antarmuka interaktif, dan sistem berbasis web dengan performa tinggi.</p>
+            <div class="space-x-4">
+                <a href="#proyek" class="inline-block bg-cyan-500 hover:bg-cyan-600 text-navy-900 font-semibold px-6 py-3 rounded-lg transition shadow-lg shadow-cyan-500/20">Lihat Proyek</a>
+                <a href="#kontak" class="inline-block border border-gray-700 hover:border-cyan-400 px-6 py-3 rounded-lg transition">Hubungi Saya</a>
+            </div>
+        </div>
+        <div class="md:w-1/2 mt-12 md:mt-0 flex justify-center">
+            <div class="w-64 h-64 md:w-80 md:h-80 rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-600 p-1 shadow-2xl shadow-cyan-500/10">
+                <div class="w-full h-full bg-navy-800 rounded-2xl flex items-center justify-center text-6xl">
+                    💻
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Keahlian -->
+    <section id="keahlian" class="max-w-6xl mx-auto px-6 py-20 border-t border-gray-800">
+        <h2 class="text-3xl font-bold mb-12 text-center">Keahlian & Teknologi</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="bg-navy-800 border border-gray-800 p-6 rounded-xl text-center hover:border-cyan-500/50 transition">
+                <div class="text-4xl mb-3">🌐</div>
+                <h3 class="font-semibold text-lg">Web Development</h3>
+                <p class="text-sm text-gray-400 mt-2">HTML, CSS, JavaScript, React</p>
+            </div>
+            <div class="bg-navy-800 border border-gray-800 p-6 rounded-xl text-center hover:border-cyan-500/50 transition">
+                <div class="text-4xl mb-3">⚡</div>
+                <h3 class="font-semibold text-lg">Tailwind CSS</h3>
+                <p class="text-sm text-gray-400 mt-2">Modern UI Styling & Responsive</p>
+            </div>
+            <div class="bg-navy-800 border border-gray-800 p-6 rounded-xl text-center hover:border-cyan-500/50 transition">
+                <div class="text-4xl mb-3">🤖</div>
+                <h3 class="font-semibold text-lg">AI Integration</h3>
+                <p class="text-sm text-gray-400 mt-2">LLM, Automation, Agents</p>
+            </div>
+            <div class="bg-navy-800 border border-gray-800 p-6 rounded-xl text-center hover:border-cyan-500/50 transition">
+                <div class="text-4xl mb-3">🐙</div>
+                <h3 class="font-semibold text-lg">Git & GitHub</h3>
+                <p class="text-sm text-gray-400 mt-2">Version Control & CI/CD</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Proyek -->
+    <section id="proyek" class="max-w-6xl mx-auto px-6 py-20 border-t border-gray-800">
+        <h2 class="text-3xl font-bold mb-12 text-center">Proyek Pilihan</h2>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-navy-800 border border-gray-800 rounded-xl overflow-hidden hover:border-cyan-500/50 transition">
+                <div class="h-48 bg-gradient-to-r from-blue-900 to-indigo-900 flex items-center justify-center text-4xl">
+                    🤖
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Engine Igor Labs - Animatronic Puppet</h3>
+                    <p class="text-gray-400 text-sm mb-4">Sistem sinkronisasi audio real-time FFT untuk kontrol servo animatronic berbasis ESP32 dan cloud.</p>
+                    <a href="https://github.com/esilayuniamina-jpg/servo-melody" target="_blank" class="text-cyan-400 hover:underline text-sm font-semibold">Lihat di GitHub →</a>
+                </div>
+            </div>
+            <div class="bg-navy-800 border border-gray-800 rounded-xl overflow-hidden hover:border-cyan-500/50 transition">
+                <div class="h-48 bg-gradient-to-r from-cyan-900 to-blue-900 flex items-center justify-center text-4xl">
+                    ⚡
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Web Portofolio Pribadi</h3>
+                    <p class="text-gray-400 text-sm mb-4">Website portofolio modern responsif dengan desain elegan dan latar belakang biru dongker.</p>
+                    <a href="#" class="text-cyan-400 hover:underline text-sm font-semibold">Lihat Detail →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kontak -->
+    <section id="kontak" class="max-w-4xl mx-auto px-6 py-20 border-t border-gray-800 text-center">
+        <h2 class="text-3xl font-bold mb-6">Mari Terhubung</h2>
+        <p class="text-gray-400 mb-8">Punya proyek menarik atau ingin berkolaborasi? Jangan ragu untuk menghubungi saya.</p>
+        <a href="mailto:email@example.com" class="inline-block bg-cyan-500 hover:bg-cyan-600 text-navy-900 font-semibold px-8 py-3 rounded-lg transition shadow-lg shadow-cyan-500/20">Kirim Email</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 py-8 text-center text-gray-500 text-sm">
+        <p>&copy; 2026 Portofolio Saya. Dibuat dengan bantuan AI Agent.</p>
+    </footer>
+</body>
+</html>
