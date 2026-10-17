@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Speech Indonesia - Reliable TTS</title>
+    <title>Text to Speech Indonesia - Google Web Speech</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -25,7 +25,7 @@
                 🎙️ <span class="text-cyan-400">TTS Indonesia Studio</span>
             </div>
             <div class="text-sm text-cyan-400 font-mono" id="engine-status">
-                Memuat Suara...
+                Menyiapkan Suara...
             </div>
         </div>
     </nav>
@@ -44,7 +44,7 @@
                 </div>
 
                 <!-- Status Info -->
-                <div id="status-msg" class="text-xs text-center text-cyan-400 py-1">Menyiapkan engine suara browser...</div>
+                <div id="status-msg" class="text-xs text-center text-cyan-400 py-1">Klik tombol Putar di bawah.</div>
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 pt-2">
@@ -72,28 +72,15 @@
         const statusMsg = document.getElementById('status-msg');
         const engineStatus = document.getElementById('engine-status');
 
-        let voices = [];
-
-        function loadVoices() {
-            if (!window.speechSynthesis) return;
-            voices = window.speechSynthesis.getVoices();
-            if (voices.length > 0) {
-                engineStatus.textContent = "Suara Siap (" + voices.length + " tersedia)";
-                statusMsg.textContent = "Suara browser siap digunakan.";
+        function checkEngine() {
+            if ('speechSynthesis' in window) {
+                engineStatus.textContent = "Engine Siap";
+            } else {
+                engineStatus.textContent = "Tidak Didukung";
+                statusMsg.textContent = "Browser Anda tidak mendukung Web Speech API.";
             }
         }
-
-        loadVoices();
-
-        if (window.speechSynthesis) {
-            if (window.speechSynthesis.onvoiceschanged !== undefined) {
-                window.speechSynthesis.onvoiceschanged = loadVoices;
-            }
-        }
-
-        // Fallback panggil ulang beberapa kali untuk memastikan browser memuat voice list
-        setTimeout(loadVoices, 500);
-        setTimeout(loadVoices, 1000);
+        checkEngine();
 
         speakBtn.addEventListener('click', () => {
             const text = textInput.value.trim();
@@ -102,39 +89,32 @@
                 return;
             }
 
-            if (!window.speechSynthesis) {
-                alert('Browser Anda tidak mendukung Web Speech API.');
+            if (!('speechSynthesis' in window)) {
+                alert('Browser Anda tidak mendukung TTS.');
                 return;
             }
 
-            // Hentikan suara sebelumnya
+            // Batalkan semua antrian suara sebelumnya
             window.speechSynthesis.cancel();
 
+            statusMsg.textContent = "Memulai suara...";
+            speakBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
             const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
 
-            // Cari suara bahasa Indonesia (id-ID atau id)
-            let selectedVoice = null;
-            voices = window.speechSynthesis.getVoices();
+            // Ambil daftar suara terbaru secara langsung
+            const voices = window.speechSynthesis.getVoices();
+            const indonesianVoice = voices.find(v => v.lang.startsWith('id') || v.name.toLowerCase().includes('indonesia'));
             
-            for (let v of voices) {
-                if (v.lang === 'id-ID' || v.lang === 'id' || v.lang.toLowerCase().includes('id')) {
-                    selectedVoice = v;
-                    break;
-                }
-            }
-
-            if (selectedVoice) {
-                utterance.voice = selectedVoice;
-                utterance.lang = selectedVoice.lang;
-            } else {
-                // Jika tidak ada bahasa Indonesia, gunakan default tapi paksa lang id-ID
-                utterance.lang = 'id-ID';
+            if (indonesianVoice) {
+                utterance.voice = indonesianVoice;
+                console.log("Menggunakan suara:", indonesianVoice.name);
             }
 
             utterance.onstart = () => {
-                speakBtn.classList.add('opacity-50', 'cursor-not-allowed');
                 statusMsg.textContent = "Sedang berbicara...";
             };
 
@@ -144,22 +124,23 @@
             };
 
             utterance.onerror = (e) => {
-                console.error("Speech error:", e);
+                console.error("Speech error event:", e);
                 speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                statusMsg.textContent = "Gagal memutar suara.";
+                statusMsg.textContent = "Gagal memutar suara (Coba ketuk layar/klik lagi).";
             };
 
-            // Mainkan
-            window.speechSynthesis.speak(utterance);
-
-            // Bugfix Chrome pause/resume
-            if (window.speechSynthesis.paused) {
-                window.speechSynthesis.resume();
-            }
+            // Beri jeda kecil setelah cancel agar engine siap
+            setTimeout(() => {
+                window.speechSynthesis.speak(utterance);
+                // Paksa resume jika macet di browser tertentu
+                if (window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
+                }
+            }, 50);
         });
 
         stopBtn.addEventListener('click', () => {
-            if (window.speechSynthesis) {
+            if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
             }
             speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
