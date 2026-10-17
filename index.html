@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Speech Gratis - Google TTS & Web Speech API</title>
+    <title>Text to Speech Indonesia Gratis</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,10 +22,10 @@
     <nav class="border-b border-gray-800 bg-navy-900/80 backdrop-blur sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="font-bold text-xl flex items-center gap-2">
-                🗣️ <span class="text-cyan-400">Free TTS Studio</span>
+                🇮🇩 <span class="text-cyan-400">TTS Bahasa Indonesia</span>
             </div>
             <div class="text-sm text-gray-400">
-                Powered by Web Speech API
+                Google / Web Speech API
             </div>
         </div>
     </nav>
@@ -33,37 +33,34 @@
     <!-- Main Content -->
     <main class="max-w-3xl mx-auto px-6 py-12 w-full flex-grow">
         <div class="bg-navy-800 border border-gray-800 rounded-2xl p-6 md:p-8 shadow-2xl">
-            <h1 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Text to Speech Gratis</h1>
-            <p class="text-gray-400 text-center mb-8 text-sm">Ketik teks apa saja dan ubah langsung menjadi suara menggunakan sintesis suara browser / Google Speech.</p>
+            <h1 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Text to Speech Indonesia</h1>
+            <p class="text-gray-400 text-center mb-8 text-sm">Ketik teks dan klik tombol Putar untuk mendengarkan suara Bahasa Indonesia secara instan.</p>
             
             <div class="space-y-6">
                 <!-- Textarea -->
                 <div>
-                    <label for="text-input" class="block text-sm font-semibold mb-2 text-cyan-400">Masukkan Teks:</label>
-                    <textarea id="text-input" rows="5" class="w-full bg-navy-900 border border-gray-700 rounded-xl p-4 text-gray-100 focus:outline-none focus:border-cyan-400 transition" placeholder="Halo! Selamat datang di aplikasi konversi teks ke suara gratis...">Halo! Selamat datang di aplikasi konversi teks ke suara gratis. Anda bisa mengetik kalimat apa saja di sini dan mendengarkannya secara instan!</textarea>
+                    <label for="text-input" class="block text-sm font-semibold mb-2 text-cyan-400">Masukkan Teks (Bahasa Indonesia):</label>
+                    <textarea id="text-input" rows="5" class="w-full bg-navy-900 border border-gray-700 rounded-xl p-4 text-gray-100 focus:outline-none focus:border-cyan-400 transition" placeholder="Halo, selamat datang! Ketik teks Anda di sini...">Halo, selamat datang! Ini adalah uji coba konversi teks ke suara bahasa Indonesia secara gratis dan instan.</textarea>
                 </div>
 
-                <!-- Controls Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Voice Selection -->
-                    <div>
-                        <label for="voice-select" class="block text-sm font-semibold mb-2 text-cyan-400">Pilih Suara / Bahasa:</label>
-                        <select id="voice-select" class="w-full bg-navy-900 border border-gray-700 rounded-xl p-3 text-gray-100 focus:outline-none focus:border-cyan-400 transition"></select>
-                    </div>
+                <!-- Hidden Voice Select for fallback -->
+                <select id="voice-select" class="hidden"></select>
 
-                    <!-- Speed Control -->
-                    <div>
-                        <label for="rate-range" class="block text-sm font-semibold mb-2 text-cyan-400">Kecepatan Suara: <span id="rate-val">1.0</span>x</label>
-                        <input type="range" id="rate-range" min="0.5" max="2" value="1" step="0.1" class="w-full accent-cyan-400 mt-3">
-                    </div>
+                <!-- Speed Control -->
+                <div>
+                    <label for="rate-range" class="block text-sm font-semibold mb-2 text-cyan-400">Kecepatan Suara: <span id="rate-val">1.0</span>x</label>
+                    <input type="range" id="rate-range" min="0.5" max="2" value="1" step="0.1" class="w-full accent-cyan-400 mt-2">
                 </div>
+
+                <!-- Status Info -->
+                <div id="status-msg" class="text-xs text-center text-gray-400 py-1"></div>
 
                 <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                    <button id="speak-btn" class="flex-1 bg-cyan-500 hover:bg-cyan-600 text-navy-900 font-bold py-3.5 px-6 rounded-xl transition shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2">
-                        🔊 Ucapkan (Play)
+                <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                    <button id="speak-btn" class="flex-1 bg-cyan-500 hover:bg-cyan-600 text-navy-900 font-bold py-3.5 px-6 rounded-xl transition shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 cursor-pointer">
+                        🔊 Putar Suara (Play)
                     </button>
-                    <button id="stop-btn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold py-3.5 px-6 rounded-xl transition border border-gray-700 flex items-center justify-center gap-2">
+                    <button id="stop-btn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold py-3.5 px-6 rounded-xl transition border border-gray-700 flex items-center justify-center gap-2 cursor-pointer">
                         ⏹️ Berhenti (Stop)
                     </button>
                 </div>
@@ -73,7 +70,7 @@
 
     <!-- Footer -->
     <footer class="border-t border-gray-800 py-6 text-center text-gray-500 text-sm">
-        <p>&copy; 2026 Free TTS Studio. Menggunakan Web Speech Synthesis API.</p>
+        <p>&copy; 2026 TTS Indonesia Studio.</p>
     </footer>
 
     <!-- JavaScript TTS -->
@@ -85,34 +82,26 @@
         const rateVal = document.getElementById('rate-val');
         const speakBtn = document.getElementById('speak-btn');
         const stopBtn = document.getElementById('stop-btn');
+        const statusMsg = document.getElementById('status-msg');
 
         let voices = [];
+        let indonesianVoice = null;
 
-        function populateVoiceList() {
-            voices = synth.getVoices().sort((a, b) => {
-                const an = a.name.toLowerCase();
-                const bn = b.name.toLowerCase();
-                if (an.includes('indonesia') || an.includes('id-id')) return -1;
-                if (bn.includes('indonesia') || bn.includes('id-id')) return 1;
-                return an.localeCompare(bn);
-            });
+        function loadVoices() {
+            voices = synth.getVoices();
+            // Cari suara bahasa Indonesia (id-ID atau id)
+            indonesianVoice = voices.find(v => v.lang === 'id-ID' || v.lang.toLowerCase().includes('id')) || voices[0];
             
-            voiceSelect.innerHTML = '';
-            voices.forEach((voice, i) => {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = `${voice.name} (${voice.lang})${voice.default ? ' — DEFAULT' : ''}`;
-                
-                if (voice.lang.includes('id') || voice.lang.includes('ID') || voice.name.toLowerCase().includes('indonesia')) {
-                    option.selected = true;
-                }
-                voiceSelect.appendChild(option);
-            });
+            if (indonesianVoice) {
+                statusMsg.textContent = `Suara aktif: ${indonesianVoice.name} (${indonesianVoice.lang})`;
+            } else {
+                statusMsg.textContent = "Menggunakan suara default sistem.";
+            }
         }
 
-        populateVoiceList();
+        loadVoices();
         if (synth.onvoiceschanged !== undefined) {
-            synth.onvoiceschanged = populateVoiceList;
+            synth.onvoiceschanged = loadVoices;
         }
 
         rateRange.addEventListener('input', () => {
@@ -120,29 +109,51 @@
         });
 
         speakBtn.addEventListener('click', () => {
+            // Pastikan suara sudah termuat
+            if (voices.length === 0) {
+                voices = synth.getVoices();
+                loadVoices();
+            }
+
             if (synth.speaking) {
                 synth.cancel();
             }
-            if (textInput.value !== '') {
-                const utterThis = new SpeechSynthesisUtterance(textInput.value);
-                const selectedOption = voiceSelect.selectedOptions[0];
-                if (selectedOption) {
-                    utterThis.voice = voices[selectedOption.value];
+
+            const text = textInput.value.trim();
+            if (text !== '') {
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                if (indonesianVoice) {
+                    utterance.voice = indonesianVoice;
                 }
-                utterThis.rate = parseFloat(rateRange.value);
-                
-                utterThis.onend = () => {
-                    speakBtn.classList.remove('opacity-50');
+                utterance.lang = 'id-ID';
+                utterance.rate = parseFloat(rateRange.value);
+                utterance.pitch = 1.0;
+
+                utterance.onstart = () => {
+                    speakBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    statusMsg.textContent = "Sedang berbicara...";
                 };
-                
-                speakBtn.classList.add('opacity-50');
-                synth.speak(utterThis);
+
+                utterance.onend = () => {
+                    speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    statusMsg.textContent = `Suara aktif: ${indonesianVoice ? indonesianVoice.name : 'Default'}`;
+                };
+
+                utterance.onerror = (e) => {
+                    console.error('TTS Error:', e);
+                    speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    statusMsg.textContent = "Terjadi kesalahan saat memutar suara.";
+                };
+
+                synth.speak(utterance);
             }
         });
 
         stopBtn.addEventListener('click', () => {
             synth.cancel();
-            speakBtn.classList.remove('opacity-50');
+            speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            statusMsg.textContent = "Pemutaran dihentikan.";
         });
     </script>
 </body>
