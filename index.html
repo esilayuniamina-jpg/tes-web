@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Speech Indonesia - Google Web Speech</title>
+    <title>Text to Speech Indonesia - Google Translate Audio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,10 +22,10 @@
     <nav class="border-b border-gray-800 bg-navy-900/80 backdrop-blur sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="font-bold text-xl flex items-center gap-2">
-                🎙️ <span class="text-cyan-400">TTS Indonesia Studio</span>
+                🔊 <span class="text-cyan-400">TTS Audio Player</span>
             </div>
             <div class="text-sm text-cyan-400 font-mono" id="engine-status">
-                Menyiapkan Suara...
+                Google Translate API
             </div>
         </div>
     </nav>
@@ -34,7 +34,7 @@
     <main class="max-w-3xl mx-auto px-6 py-12 w-full flex-grow">
         <div class="bg-navy-800 border border-gray-800 rounded-2xl p-6 md:p-8 shadow-2xl">
             <h1 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Text to Speech Bahasa Indonesia</h1>
-            <p class="text-gray-400 text-center mb-8 text-sm">Ketik teks dan klik tombol Putar untuk mendengarkan suara.</p>
+            <p class="text-gray-400 text-center mb-8 text-sm">Menggunakan pemutar audio HTML5 langsung dari Google Translate.</p>
             
             <div class="space-y-6">
                 <!-- Textarea -->
@@ -45,6 +45,9 @@
 
                 <!-- Status Info -->
                 <div id="status-msg" class="text-xs text-center text-cyan-400 py-1">Klik tombol Putar di bawah.</div>
+
+                <!-- Hidden Audio Element -->
+                <audio id="tts-audio" class="hidden"></audio>
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 pt-2">
@@ -61,7 +64,7 @@
 
     <!-- Footer -->
     <footer class="border-t border-gray-800 py-6 text-center text-gray-500 text-sm">
-        <p>&copy; 2026 TTS Indonesia Studio.</p>
+        <p>&copy; 2026 TTS Audio Player.</p>
     </footer>
 
     <!-- JavaScript Handler -->
@@ -70,17 +73,7 @@
         const speakBtn = document.getElementById('speak-btn');
         const stopBtn = document.getElementById('stop-btn');
         const statusMsg = document.getElementById('status-msg');
-        const engineStatus = document.getElementById('engine-status');
-
-        function checkEngine() {
-            if ('speechSynthesis' in window) {
-                engineStatus.textContent = "Engine Siap";
-            } else {
-                engineStatus.textContent = "Tidak Didukung";
-                statusMsg.textContent = "Browser Anda tidak mendukung Web Speech API.";
-            }
-        }
-        checkEngine();
+        const ttsAudio = document.getElementById('tts-audio');
 
         speakBtn.addEventListener('click', () => {
             const text = textInput.value.trim();
@@ -89,60 +82,31 @@
                 return;
             }
 
-            if (!('speechSynthesis' in window)) {
-                alert('Browser Anda tidak mendukung TTS.');
-                return;
-            }
-
-            // Batalkan semua antrian suara sebelumnya
-            window.speechSynthesis.cancel();
-
-            statusMsg.textContent = "Memulai suara...";
+            statusMsg.textContent = "Memuat audio dari Google...";
             speakBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'id-ID';
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
+            // Pecah teks jika terlalu panjang (maks 200 karakter per request)
+            const cleanText = text.substring(0, 200);
+            const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=id&client=tw-ob`;
 
-            // Ambil daftar suara terbaru secara langsung
-            const voices = window.speechSynthesis.getVoices();
-            const indonesianVoice = voices.find(v => v.lang.startsWith('id') || v.name.toLowerCase().includes('indonesia'));
-            
-            if (indonesianVoice) {
-                utterance.voice = indonesianVoice;
-                console.log("Menggunakan suara:", indonesianVoice.name);
-            }
-
-            utterance.onstart = () => {
-                statusMsg.textContent = "Sedang berbicara...";
-            };
-
-            utterance.onend = () => {
+            ttsAudio.src = url;
+            ttsAudio.play().then(() => {
+                statusMsg.textContent = "Sedang memutar suara...";
+            }).catch(err => {
+                console.error("Audio play error:", err);
+                statusMsg.textContent = "Gagal memutar audio. Browser memblokir autoplay / CORS.";
                 speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                statusMsg.textContent = "Pemutaran selesai.";
-            };
-
-            utterance.onerror = (e) => {
-                console.error("Speech error event:", e);
-                speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                statusMsg.textContent = "Gagal memutar suara (Coba ketuk layar/klik lagi).";
-            };
-
-            // Beri jeda kecil setelah cancel agar engine siap
-            setTimeout(() => {
-                window.speechSynthesis.speak(utterance);
-                // Paksa resume jika macet di browser tertentu
-                if (window.speechSynthesis.paused) {
-                    window.speechSynthesis.resume();
-                }
-            }, 50);
+            });
         });
 
+        ttsAudio.onended = () => {
+            speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            statusMsg.textContent = "Pemutaran selesai.";
+        };
+
         stopBtn.addEventListener('click', () => {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
+            ttsAudio.pause();
+            ttsAudio.currentTime = 0;
             speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             statusMsg.textContent = "Pemutaran dihentikan.";
         });
