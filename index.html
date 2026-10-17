@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Speech Indonesia - ResponsiveVoice</title>
+    <title>Text to Speech Indonesia - Web Audio API</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- ResponsiveVoice API untuk TTS yang andal dan pasti bunyi -->
-    <script src="https://code.responsivevoice.org/responsivevoice.js?key=free"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -24,10 +22,10 @@
     <nav class="border-b border-gray-800 bg-navy-900/80 backdrop-blur sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="font-bold text-xl flex items-center gap-2">
-                🎙️ <span class="text-cyan-400">TTS Indonesia Pro</span>
+                🎙️ <span class="text-cyan-400">TTS Indonesia Studio</span>
             </div>
             <div class="text-sm text-gray-400">
-                ResponsiveVoice Engine
+                HTML5 Speech Synthesis
             </div>
         </div>
     </nav>
@@ -36,7 +34,7 @@
     <main class="max-w-3xl mx-auto px-6 py-12 w-full flex-grow">
         <div class="bg-navy-800 border border-gray-800 rounded-2xl p-6 md:p-8 shadow-2xl">
             <h1 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Text to Speech Bahasa Indonesia</h1>
-            <p class="text-gray-400 text-center mb-8 text-sm">Ketik teks apa saja dan klik tombol Putar untuk mendengarkan suara Bahasa Indonesia.</p>
+            <p class="text-gray-400 text-center mb-8 text-sm">Ketik teks dan klik tombol Putar untuk mendengarkan suara.</p>
             
             <div class="space-y-6">
                 <!-- Textarea -->
@@ -63,7 +61,7 @@
 
     <!-- Footer -->
     <footer class="border-t border-gray-800 py-6 text-center text-gray-500 text-sm">
-        <p>&script; 2026 TTS Indonesia Pro.</p>
+        <p>&copy; 2026 TTS Indonesia Studio.</p>
     </footer>
 
     <!-- JavaScript Handler -->
@@ -73,6 +71,9 @@
         const stopBtn = document.getElementById('stop-btn');
         const statusMsg = document.getElementById('status-msg');
 
+        // Pastikan SpeechSynthesis didukung browser
+        const synth = window.speechSynthesis;
+
         speakBtn.addEventListener('click', () => {
             const text = textInput.value.trim();
             if (!text) {
@@ -80,37 +81,61 @@
                 return;
             }
 
-            if (typeof responsiveVoice === 'undefined') {
-                statusMsg.textContent = "Library suara belum termuat. Periksa koneksi internet.";
+            if (!synth) {
+                statusMsg.textContent = "Browser Anda tidak mendukung Text-to-Speech.";
                 return;
             }
 
-            statusMsg.textContent = "Memutar suara Bahasa Indonesia...";
+            // Hentikan suara yang sedang berjalan
+            if (synth.speaking) {
+                synth.cancel();
+            }
+
+            statusMsg.textContent = "Memuat suara...";
             speakBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-            responsiveVoice.speak(text, "Indonesian Female", {
-                rate: 1.0,
-                onstart: () => {
-                    statusMsg.textContent = "Sedang berbicara...";
-                },
-                onend: () => {
-                    speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    statusMsg.textContent = "Pemutaran selesai.";
-                },
-                onerror: (e) => {
-                    console.error("ResponsiveVoice error:", e);
-                    speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    statusMsg.textContent = "Terjadi kesalahan pemutaran.";
-                }
-            });
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID'; // Set bahasa Indonesia
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+
+            // Cari suara bahasa Indonesia yang tersedia di perangkat
+            const voices = synth.getVoices();
+            const indonesianVoice = voices.find(v => v.lang === 'id-ID' || v.lang.toLowerCase().includes('id'));
+            if (indonesianVoice) {
+                utterance.voice = indonesianVoice;
+            }
+
+            utterance.onstart = () => {
+                statusMsg.textContent = "Sedang berbicara...";
+            };
+
+            utterance.onend = () => {
+                speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                statusMsg.textContent = "Pemutaran selesai.";
+            };
+
+            utterance.onerror = (e) => {
+                console.error("Speech error:", e);
+                speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                statusMsg.textContent = "Terjadi kesalahan pemutaran suara.";
+            };
+
+            // Jalankan
+            synth.speak(utterance);
+
+            // Bugfix khusus Chrome di mana synth kadang "macet" jika tidak di-resume
+            if (synth.paused) {
+                synth.resume();
+            }
         });
 
         stopBtn.addEventListener('click', () => {
-            if (typeof responsiveVoice !== 'undefined') {
-                responsiveVoice.cancel();
+            if (synth) {
+                synth.cancel();
             }
             speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                        statusMsg.textContent = "Pemutaran dihentikan.";
+            statusMsg.textContent = "Pemutaran dihentikan.";
         });
     </script>
 </body>
