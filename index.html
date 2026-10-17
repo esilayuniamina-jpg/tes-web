@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTS Indonesia - Interactive Audio Trigger</title>
+    <title>TTS Indonesia - Pro Robust Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,10 +22,10 @@
     <nav class="border-b border-gray-800 bg-navy-900/80 backdrop-blur sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="font-bold text-xl flex items-center gap-2">
-                🛡️ <span class="text-cyan-400">Igor Labs Audio Security</span>
+                ⚙️ <span class="text-cyan-400">Igor Labs Pro TTS</span>
             </div>
             <div class="text-sm text-cyan-400 font-mono" id="engine-status">
-                Autoplay Bypass Active
+                Engine Active
             </div>
         </div>
     </nav>
@@ -33,18 +33,18 @@
     <!-- Main Content -->
     <main class="max-w-3xl mx-auto px-6 py-12 w-full flex-grow">
         <div class="bg-navy-800 border border-gray-800 rounded-2xl p-6 md:p-8 shadow-2xl">
-            <h1 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Text to Speech Bahasa Indonesia</h1>
-            <p class="text-gray-400 text-center mb-8 text-sm">Menggunakan Web Speech API Murni (Tanpa CORS / Tanpa Blokir Browser).</p>
+            <h1 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Text to Speech Pro</h1>
+            <p class="text-gray-400 text-center mb-8 text-sm">Menggunakan engine robust dengan auto-fallback dan pencegahan garbage collection.</p>
             
             <div class="space-y-6">
                 <!-- Textarea -->
                 <div>
                     <label for="text-input" class="block text-sm font-semibold mb-2 text-cyan-400">Masukkan Teks:</label>
-                    <textarea id="text-input" rows="5" class="w-full bg-navy-900 border border-gray-700 rounded-xl p-4 text-gray-100 focus:outline-none focus:border-cyan-400 transition" placeholder="Ketik teks di sini...">Halo! Selamat datang di aplikasi konversi teks ke suara buatan Igor Labs.</textarea>
+                    <textarea id="text-input" rows="5" class="w-full bg-navy-900 border border-gray-700 rounded-xl p-4 text-gray-100 focus:outline-none focus:border-cyan-400 transition" placeholder="Ketik teks di sini...">Halo! Selamat datang di aplikasi Text to Speech profesional buatan Igor Labs.</textarea>
                 </div>
 
                 <!-- Status Info -->
-                <div id="status-msg" class="text-xs text-center text-cyan-400 py-1">Sistem siap. Klik tombol untuk mengizinkan audio.</div>
+                <div id="status-msg" class="text-xs text-center text-cyan-400 py-1">Sistem siap. Silakan klik Putar.</div>
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 pt-2">
@@ -61,10 +61,10 @@
 
     <!-- Footer -->
     <footer class="border-t border-gray-800 py-6 text-center text-gray-500 text-sm">
-        <p>&copy; 2026 Igor Labs. All rights reserved.</p>
+        <p>&copy; 2026 Igor Labs. Professional Engineering.</p>
     </footer>
 
-    <!-- JavaScript Ultra Robust Handler -->
+    <!-- JavaScript Pro Robust Handler -->
     <script>
         const textInput = document.getElementById('text-input');
         const speakBtn = document.getElementById('speak-btn');
@@ -72,13 +72,7 @@
         const statusMsg = document.getElementById('status-msg');
 
         let synth = window.speechSynthesis;
-
-        // Inisialisasi awal untuk membuka kunci kebijakan autoplay browser
-        window.addEventListener('click', () => {
-            if (synth && synth.paused) {
-                synth.resume();
-            }
-        }, { once: true });
+        let currentUtterance = null; // Mencegah garbage collection
 
         speakBtn.addEventListener('click', () => {
             const text = textInput.value.trim();
@@ -92,47 +86,60 @@
                 return;
             }
 
-            // Batalkan pemutaran sebelumnya untuk menghindari antrean macet
+            // Batalkan pemutaran sebelumnya
             synth.cancel();
 
             statusMsg.textContent = "Menyiapkan suara...";
             speakBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'id-ID';
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.rate = 1.0;
+            currentUtterance.pitch = 1.0;
 
-            // Ambil suara bahasa Indonesia
-            const voices = synth.getVoices();
-            const indonesianVoice = voices.find(v => v.lang.startsWith('id') || v.name.toLowerCase().includes('indonesia'));
-            
-            if (indonesianVoice) {
-                utterance.voice = indonesianVoice;
+            // Cari suara bahasa Indonesia, jika tidak ada gunakan suara default browser
+            let voices = synth.getVoices();
+            let selectedVoice = voices.find(v => v.lang === 'id-ID' || v.lang === 'id' || v.name.toLowerCase().includes('indonesia'));
+
+            if (selectedVoice) {
+                currentUtterance.voice = selectedVoice;
+                currentUtterance.lang = selectedVoice.lang;
+            } else {
+                // Fallback universal agar tetap bersuara
+                currentUtterance.lang = 'id-ID';
             }
 
-            utterance.onstart = () => {
+            currentUtterance.onstart = () => {
                 statusMsg.textContent = "Sedang berbicara...";
             };
 
-            utterance.onend = () => {
+            currentUtterance.onend = () => {
                 speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 statusMsg.textContent = "Pemutaran selesai.";
+                currentUtterance = null;
             };
 
-            utterance.onerror = (e) => {
+            currentUtterance.onerror = (e) => {
                 console.error("SpeechSynthesis error:", e);
                 speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                statusMsg.textContent = "Error: Pastikan browser mengizinkan audio untuk situs ini.";
+                statusMsg.textContent = "Error pemutaran. Mencoba suara default...";
+                
+                // Fallback darurat jika error
+                try {
+                    const fallback = new SpeechSynthesisUtterance(text);
+                    synth.speak(fallback);
+                } catch (err) {
+                    console.error("Fallback error:", err);
+                }
+                currentUtterance = null;
             };
 
-            // Jalankan dengan sedikit delay agar engine stabil
-            setTimeout(() => {
-                synth.speak(utterance);
-                if (synth.paused) {
-                    synth.resume();
-                }
-            }, 50);
+            // Eksekusi pemutaran
+            synth.speak(currentUtterance);
+
+            // Bugfix Chrome pause/resume bug
+            if (synth.paused) {
+                synth.resume();
+            }
         });
 
         stopBtn.addEventListener('click', () => {
@@ -141,6 +148,7 @@
             }
             speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             statusMsg.textContent = "Pemutaran dihentikan.";
+            currentUtterance = null;
         });
     </script>
 </body>
