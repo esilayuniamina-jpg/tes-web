@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Speech Indonesia Gratis</title>
+    <title>Text to Speech Indonesia - Google Translate TTS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,10 +22,10 @@
     <nav class="border-b border-gray-800 bg-navy-900/80 backdrop-blur sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="font-bold text-xl flex items-center gap-2">
-                🇮🇩 <span class="text-cyan-400">TTS Bahasa Indonesia</span>
+                🔊 <span class="text-cyan-400">Google TTS Indonesia</span>
             </div>
             <div class="text-sm text-gray-400">
-                Google / Web Speech API
+                Audio Engine v2
             </div>
         </div>
     </nav>
@@ -33,27 +33,21 @@
     <!-- Main Content -->
     <main class="max-w-3xl mx-auto px-6 py-12 w-full flex-grow">
         <div class="bg-navy-800 border border-gray-800 rounded-2xl p-6 md:p-8 shadow-2xl">
-            <h1 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Text to Speech Indonesia</h1>
-            <p class="text-gray-400 text-center mb-8 text-sm">Ketik teks dan klik tombol Putar untuk mendengarkan suara Bahasa Indonesia secara instan.</p>
+            <h1 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Google Text to Speech</h1>
+            <p class="text-gray-400 text-center mb-8 text-sm">Menggunakan audio langsung dari Google Translate untuk suara Bahasa Indonesia yang natural.</p>
             
             <div class="space-y-6">
                 <!-- Textarea -->
                 <div>
-                    <label for="text-input" class="block text-sm font-semibold mb-2 text-cyan-400">Masukkan Teks (Bahasa Indonesia):</label>
-                    <textarea id="text-input" rows="5" class="w-full bg-navy-900 border border-gray-700 rounded-xl p-4 text-gray-100 focus:outline-none focus:border-cyan-400 transition" placeholder="Halo, selamat datang! Ketik teks Anda di sini...">Halo, selamat datang! Ini adalah uji coba konversi teks ke suara bahasa Indonesia secara gratis dan instan.</textarea>
-                </div>
-
-                <!-- Hidden Voice Select for fallback -->
-                <select id="voice-select" class="hidden"></select>
-
-                <!-- Speed Control -->
-                <div>
-                    <label for="rate-range" class="block text-sm font-semibold mb-2 text-cyan-400">Kecepatan Suara: <span id="rate-val">1.0</span>x</label>
-                    <input type="range" id="rate-range" min="0.5" max="2" value="1" step="0.1" class="w-full accent-cyan-400 mt-2">
+                    <label for="text-input" class="block text-sm font-semibold mb-2 text-cyan-400">Masukkan Teks:</label>
+                    <textarea id="text-input" rows="5" class="w-full bg-navy-900 border border-gray-700 rounded-xl p-4 text-gray-100 focus:outline-none focus:border-cyan-400 transition" placeholder="Ketik teks bahasa Indonesia di sini...">Halo, selamat datang! Ini adalah pemutar suara bahasa Indonesia menggunakan audio Google.</textarea>
                 </div>
 
                 <!-- Status Info -->
-                <div id="status-msg" class="text-xs text-center text-gray-400 py-1"></div>
+                <div id="status-msg" class="text-xs text-center text-cyan-400 py-1">Siap memutar suara.</div>
+
+                <!-- Hidden Audio Element -->
+                <audio id="audio-player" class="hidden"></audio>
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 pt-2">
@@ -70,88 +64,50 @@
 
     <!-- Footer -->
     <footer class="border-t border-gray-800 py-6 text-center text-gray-500 text-sm">
-        <p>&copy; 2026 TTS Indonesia Studio.</p>
+        <p>&copy; 2026 Google TTS Indonesia.</p>
     </footer>
 
-    <!-- JavaScript TTS -->
+    <!-- JavaScript Google TTS API -->
     <script>
-        const synth = window.speechSynthesis;
         const textInput = document.getElementById('text-input');
-        const voiceSelect = document.getElementById('voice-select');
-        const rateRange = document.getElementById('rate-range');
-        const rateVal = document.getElementById('rate-val');
         const speakBtn = document.getElementById('speak-btn');
         const stopBtn = document.getElementById('stop-btn');
         const statusMsg = document.getElementById('status-msg');
-
-        let voices = [];
-        let indonesianVoice = null;
-
-        function loadVoices() {
-            voices = synth.getVoices();
-            // Cari suara bahasa Indonesia (id-ID atau id)
-            indonesianVoice = voices.find(v => v.lang === 'id-ID' || v.lang.toLowerCase().includes('id')) || voices[0];
-            
-            if (indonesianVoice) {
-                statusMsg.textContent = `Suara aktif: ${indonesianVoice.name} (${indonesianVoice.lang})`;
-            } else {
-                statusMsg.textContent = "Menggunakan suara default sistem.";
-            }
-        }
-
-        loadVoices();
-        if (synth.onvoiceschanged !== undefined) {
-            synth.onvoiceschanged = loadVoices;
-        }
-
-        rateRange.addEventListener('input', () => {
-            rateVal.textContent = rateRange.value;
-        });
+        const audioPlayer = document.getElementById('audio-player');
 
         speakBtn.addEventListener('click', () => {
-            // Pastikan suara sudah termuat
-            if (voices.length === 0) {
-                voices = synth.getVoices();
-                loadVoices();
-            }
-
-            if (synth.speaking) {
-                synth.cancel();
-            }
-
             const text = textInput.value.trim();
-            if (text !== '') {
-                const utterance = new SpeechSynthesisUtterance(text);
-                
-                if (indonesianVoice) {
-                    utterance.voice = indonesianVoice;
-                }
-                utterance.lang = 'id-ID';
-                utterance.rate = parseFloat(rateRange.value);
-                utterance.pitch = 1.0;
-
-                utterance.onstart = () => {
-                    speakBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                    statusMsg.textContent = "Sedang berbicara...";
-                };
-
-                utterance.onend = () => {
-                    speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    statusMsg.textContent = `Suara aktif: ${indonesianVoice ? indonesianVoice.name : 'Default'}`;
-                };
-
-                utterance.onerror = (e) => {
-                    console.error('TTS Error:', e);
-                    speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    statusMsg.textContent = "Terjadi kesalahan saat memutar suara.";
-                };
-
-                synth.speak(utterance);
+            if (!text) {
+                alert('Silakan masukkan teks terlebih dahulu!');
+                return;
             }
+
+            statusMsg.textContent = "Menghasilkan suara dari Google...";
+            speakBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            // Batasi panjang teks per request max ~200 karakter untuk Google TTS URL
+            const encodedText = encodeURIComponent(text);
+            // Menggunakan endpoint publik Google Translate TTS
+            const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=id&client=tw-ob`;
+
+            audioPlayer.src = ttsUrl;
+            audioPlayer.play().then(() => {
+                statusMsg.textContent = "Sedang memutar suara...";
+            }).catch(err => {
+                console.error("Audio play error:", err);
+                statusMsg.textContent = "Gagal memutar audio. Pastikan browser mengizinkan audio/CORS.";
+                speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            });
         });
 
+        audioPlayer.onended = () => {
+            speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            statusMsg.textContent = "Pemutaran selesai.";
+        };
+
         stopBtn.addEventListener('click', () => {
-            synth.cancel();
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
             speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             statusMsg.textContent = "Pemutaran dihentikan.";
         });
