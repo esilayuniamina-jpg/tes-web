@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTS Indonesia Pro - Igor Labs Engine</title>
+    <title>TTS Indonesia - Interactive Audio Trigger</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,10 +22,10 @@
     <nav class="border-b border-gray-800 bg-navy-900/80 backdrop-blur sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="font-bold text-xl flex items-center gap-2">
-                ⚡ <span class="text-cyan-400">Igor Labs TTS Engine</span>
+                🛡️ <span class="text-cyan-400">Igor Labs Audio Security</span>
             </div>
             <div class="text-sm text-cyan-400 font-mono" id="engine-status">
-                Pro Audio Ready
+                Autoplay Bypass Active
             </div>
         </div>
     </nav>
@@ -33,21 +33,18 @@
     <!-- Main Content -->
     <main class="max-w-3xl mx-auto px-6 py-12 w-full flex-grow">
         <div class="bg-navy-800 border border-gray-800 rounded-2xl p-6 md:p-8 shadow-2xl">
-            <h1 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Text to Speech Pro Bahasa Indonesia</h1>
-            <p class="text-gray-400 text-center mb-8 text-sm">Engine ganda dengan Web Audio API + SpeechSynthesis Fallback untuk kepastian suara 100%.</p>
+            <h1 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Text to Speech Bahasa Indonesia</h1>
+            <p class="text-gray-400 text-center mb-8 text-sm">Menggunakan Web Speech API Murni (Tanpa CORS / Tanpa Blokir Browser).</p>
             
             <div class="space-y-6">
                 <!-- Textarea -->
                 <div>
                     <label for="text-input" class="block text-sm font-semibold mb-2 text-cyan-400">Masukkan Teks:</label>
-                    <textarea id="text-input" rows="5" class="w-full bg-navy-900 border border-gray-700 rounded-xl p-4 text-gray-100 focus:outline-none focus:border-cyan-400 transition" placeholder="Ketik teks di sini...">Halo! Selamat datang di aplikasi Text to Speech profesional buatan Igor Labs.</textarea>
+                    <textarea id="text-input" rows="5" class="w-full bg-navy-900 border border-gray-700 rounded-xl p-4 text-gray-100 focus:outline-none focus:border-cyan-400 transition" placeholder="Ketik teks di sini...">Halo! Selamat datang di aplikasi konversi teks ke suara buatan Igor Labs.</textarea>
                 </div>
 
                 <!-- Status Info -->
-                <div id="status-msg" class="text-xs text-center text-cyan-400 py-1">Sistem siap. Silakan klik tombol Putar.</div>
-
-                <!-- Hidden Audio Element -->
-                <audio id="backup-audio" class="hidden"></audio>
+                <div id="status-msg" class="text-xs text-center text-cyan-400 py-1">Sistem siap. Klik tombol untuk mengizinkan audio.</div>
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 pt-2">
@@ -64,18 +61,24 @@
 
     <!-- Footer -->
     <footer class="border-t border-gray-800 py-6 text-center text-gray-500 text-sm">
-        <p>&copy; 2026 Igor Labs. Engineered with precision.</p>
+        <p>&copy; 2026 Igor Labs. All rights reserved.</p>
     </footer>
 
-    <!-- JavaScript Pro Engine -->
+    <!-- JavaScript Ultra Robust Handler -->
     <script>
         const textInput = document.getElementById('text-input');
         const speakBtn = document.getElementById('speak-btn');
         const stopBtn = document.getElementById('stop-btn');
         const statusMsg = document.getElementById('status-msg');
-        const backupAudio = document.getElementById('backup-audio');
 
         let synth = window.speechSynthesis;
+
+        // Inisialisasi awal untuk membuka kunci kebijakan autoplay browser
+        window.addEventListener('click', () => {
+            if (synth && synth.paused) {
+                synth.resume();
+            }
+        }, { once: true });
 
         speakBtn.addEventListener('click', () => {
             const text = textInput.value.trim();
@@ -84,79 +87,58 @@
                 return;
             }
 
-            statusMsg.textContent = "Memproses audio...";
+            if (!synth) {
+                alert('Browser Anda tidak mendukung Web Speech API.');
+                return;
+            }
+
+            // Batalkan pemutaran sebelumnya untuk menghindari antrean macet
+            synth.cancel();
+
+            statusMsg.textContent = "Menyiapkan suara...";
             speakBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-            // Hentikan pemutaran sebelumnya
-            if (synth) synth.cancel();
-            backupAudio.pause();
-            backupAudio.currentTime = 0;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
 
-            // STRATEGI 1: Gunakan Web Speech API Native dengan penanganan instance yang kuat
-            if (synth && 'SpeechSynthesisUtterance' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'id-ID';
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-
-                let voices = synth.getVoices();
-                let indonesianVoice = voices.find(v => v.lang === 'id-ID' || v.lang.toLowerCase().includes('id'));
-                if (indonesianVoice) {
-                    utterance.voice = indonesianVoice;
-                }
-
-                utterance.onstart = () => {
-                    statusMsg.textContent = "Sedang berbicara (Native Engine)...";
-                };
-
-                utterance.onend = () => {
-                    speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    statusMsg.textContent = "Pemutaran selesai.";
-                };
-
-                utterance.onerror = (e) => {
-                    console.warn("Native Speech gagal, beralih ke Fallback Audio:", e);
-                    tryBackupAudio(text);
-                };
-
-                synth.speak(utterance);
-
-                // Bugfix Google Chrome bug di mana speak() kadang tertahan di antrean
-                setTimeout(() => {
-                    if (synth.paused) synth.resume();
-                }, 100);
-
-            } else {
-                tryBackupAudio(text);
+            // Ambil suara bahasa Indonesia
+            const voices = synth.getVoices();
+            const indonesianVoice = voices.find(v => v.lang.startsWith('id') || v.name.toLowerCase().includes('indonesia'));
+            
+            if (indonesianVoice) {
+                utterance.voice = indonesianVoice;
             }
+
+            utterance.onstart = () => {
+                statusMsg.textContent = "Sedang berbicara...";
+            };
+
+            utterance.onend = () => {
+                speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                statusMsg.textContent = "Pemutaran selesai.";
+            };
+
+            utterance.onerror = (e) => {
+                console.error("SpeechSynthesis error:", e);
+                speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                statusMsg.textContent = "Error: Pastikan browser mengizinkan audio untuk situs ini.";
+            };
+
+            // Jalankan dengan sedikit delay agar engine stabil
+            setTimeout(() => {
+                synth.speak(utterance);
+                if (synth.paused) {
+                    synth.resume();
+                }
+            }, 50);
         });
 
-        function tryBackupAudio(text) {
-            statusMsg.textContent = "Menggunakan Cloud Stream Engine...";
-            const cleanText = text.substring(0, 200);
-            
-            // Menggunakan gstatic/google translate audio proxy publik yang bebas CORS
-            const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=id&client=tw-ob`;
-
-            backupAudio.src = audioUrl;
-            backupAudio.play().then(() => {
-                statusMsg.textContent = "Sedang berbicara (Cloud Engine)...";
-            }).catch(err => {
-                console.error("Cloud Audio Error:", err);
-                speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                statusMsg.textContent = "Gagal memutar suara. Pastikan tidak diblokir browser.";
-            });
-        }
-
-        backupAudio.onended = () => {
-            speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            statusMsg.textContent = "Pemutaran selesai.";
-        };
-
         stopBtn.addEventListener('click', () => {
-            if (synth) synth.cancel();
-            backupAudio.pause();
-            backupAudio.currentTime = 0;
+            if (synth) {
+                synth.cancel();
+            }
             speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             statusMsg.textContent = "Pemutaran dihentikan.";
         });
