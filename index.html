@@ -1,122 +1,168 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTS Indonesia - Instant Cloud Audio</title>
+    <title>Igor Labs - Ultimate TTS Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        navy: { 800: '#0f172a', 900: '#090d16' }
+                        navy: { 800: '#1e293b', 900: '#0f172a' }
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-navy-900 text-gray-100 font-sans min-h-screen flex flex-col justify-between">
-    <!-- Navbar -->
-    <nav class="border-b border-gray-800 bg-navy-900/80 backdrop-blur sticky top-0 z-50">
+<body class="bg-navy-900 text-white min-h-screen flex flex-col justify-between font-sans">
+    
+    <!-- Header -->
+    <header class="border-b border-gray-800 bg-navy-900/90 backdrop-blur sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="font-bold text-xl flex items-center gap-2">
-                ⚡ <span class="text-cyan-400">Igor Labs Cloud TTS</span>
-            </div>
-            <div class="text-sm text-cyan-400 font-mono">
-                HTML5 Audio Stream
-            </div>
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                ⚡ <span class="text-cyan-400">Igor Labs TTS Studio</span>
+            </h1>
+            <span class="text-xs px-3 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full font-mono">
+                HTML5 Web Audio API
+            </span>
         </div>
-    </nav>
+    </header>
 
-    <!-- Main Content -->
-    <main class="max-w-3xl mx-auto px-6 py-12 w-full flex-grow">
-        <div class="bg-navy-800 border border-gray-800 rounded-2xl p-6 md:p-8 shadow-2xl">
-            <h1 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Text to Speech Bahasa Indonesia</h1>
-            <p class="text-gray-400 text-center mb-8 text-sm">Menggunakan stream audio langsung dari server Google untuk kepastian suara 100% tanpa bergantung pada perangkat.</p>
+    <!-- Main Container -->
+    <main class="max-w-2xl mx-auto px-6 py-12 w-full flex-grow flex flex-col justify-center">
+        <div class="bg-navy-800 border border-gray-700/50 rounded-2xl p-6 md:p-8 shadow-2xl space-y-6">
             
-            <div class="space-y-6">
-                <!-- Textarea -->
-                <div>
-                    <label for="text-input" class="block text-sm font-semibold mb-2 text-cyan-400">Masukkan Teks:</label>
-                    <textarea id="text-input" rows="5" class="w-full bg-navy-900 border border-gray-700 rounded-xl p-4 text-gray-100 focus:outline-none focus:border-cyan-400 transition" placeholder="Ketik teks di sini...">Halo! Selamat datang di aplikasi konversi teks ke suara bahasa Indonesia buatan Igor Labs.</textarea>
-                </div>
-
-                <!-- Status Info -->
-                <div id="status-msg" class="text-xs text-center text-cyan-400 py-1">Sistem siap. Klik tombol Putar.</div>
-
-                <!-- Audio Element -->
-                <audio id="audio-player" class="hidden"></audio>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row gap-4 pt-2">
-                    <button id="speak-btn" class="flex-1 bg-cyan-500 hover:bg-cyan-600 text-navy-900 font-bold py-3.5 px-6 rounded-xl transition shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 cursor-pointer">
-                        🔊 Putar Suara (Play)
-                    </button>
-                    <button id="stop-btn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold py-3.5 px-6 rounded-xl transition border border-gray-700 flex items-center justify-center gap-2 cursor-pointer">
-                        ⏹️ Berhenti (Stop)
-                    </button>
-                </div>
+            <div class="text-center space-y-2">
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Text to Speech Indonesia</h2>
+                <p class="text-gray-400 text-sm">Ketik teks apa saja di bawah dan klik tombol Play untuk mulai mendengarkan suara.</p>
             </div>
+
+            <!-- Text Input -->
+            <div class="space-y-2">
+                <label for="text" class="block text-sm font-medium text-cyan-400">Teks yang akan diucapkan:</label>
+                <textarea id="text" rows="4" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-4 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none transition" placeholder="Ketik sesuatu di sini...">Halo! Ini adalah sistem Text to Speech buatan Igor Labs yang dirancang khusus untuk Anda.</textarea>
+            </div>
+
+            <!-- Status Indicator -->
+            <div id="status" class="text-xs text-center font-mono py-2 px-3 rounded-lg bg-gray-900/60 border border-gray-800 text-cyan-300">
+                Sistem siap. Silakan klik tombol Play di bawah.
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex gap-4 pt-2">
+                <button id="play-btn" class="flex-1 bg-cyan-500 hover:bg-cyan-600 text-gray-950 font-bold py-4 px-6 rounded-xl transition shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 cursor-pointer text-base">
+                    🔊 Play Suara
+                </button>
+                <button id="stop-btn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold py-4 px-6 rounded-xl transition border border-gray-700 flex items-center justify-center gap-2 cursor-pointer text-base">
+                    ⏹️ Stop
+                </button>
+            </div>
+
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="border-t border-gray-800 py-6 text-center text-gray-500 text-sm">
-        <p>&copy; 2026 Igor Labs. Cloud Audio Engine.</p>
+        <p>&copy; 2026 Igor Labs. Engineered for Excellence.</p>
     </footer>
 
-    <!-- JavaScript Audio Stream Handler -->
+    <!-- Core Logic: Rombak Total Bersih & Minimalis -->
     <script>
-        const textInput = document.getElementById('text-input');
-        const speakBtn = document.getElementById('speak-btn');
+        const textInput = document.getElementById('text');
+        const playBtn = document.getElementById('play-btn');
         const stopBtn = document.getElementById('stop-btn');
-        const statusMsg = document.getElementById('status-msg');
-        const audioPlayer = document.getElementById('audio-player');
+        const statusDiv = document.getElementById('status');
 
-        speakBtn.addEventListener('click', () => {
+        // Pastikan browser mendukung SpeechSynthesis
+        const synth = window.speechSynthesis;
+
+        function updateStatus(msg, isError = false) {
+            statusDiv.textContent = msg;
+            statusDiv.className = `text-xs text-center font-mono py-2 px-3 rounded-lg bg-gray-900/60 border ${isError ? 'border-red-500/50 text-red-400' : 'border-gray-800 text-cyan-300'}`;
+        }
+
+        playBtn.addEventListener('click', () => {
             const text = textInput.value.trim();
             if (!text) {
                 alert('Silakan masukkan teks terlebih dahulu!');
                 return;
             }
 
-            statusMsg.textContent = "Menghubungkan ke server suara...";
-            speakBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            if (!synth) {
+                updateStatus('Error: Browser Anda tidak mendukung Web Speech API.', true);
+                return;
+            }
 
-            // Hentikan audio sebelumnya
-            audioPlayer.pause();
-            audioPlayer.currentTime = 0;
+            // Hentikan suara yang sedang berjalan
+            synth.cancel();
 
-            // Batasi teks maksimal 200 karakter per request
-            const cleanText = text.substring(0, 200);
+            updateStatus('Memulai pemutaran...');
+            playBtn.disabled = true;
+            playBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+
+            // Ambil suara yang tersedia di device
+            const voices = synth.getVoices();
+            const idVoice = voices.find(v => v.lang.toLowerCase().includes('id') || v.name.toLowerCase().includes('indonesia'));
             
-            // Menggunakan mirror proxy publik gstatic / translate_tts untuk menghindari masalah CORS di beberapa browser
-            const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=id&client=tw-ob`;
+            if (idVoice) {
+                utterance.voice = idVoice;
+            }
 
-            audioPlayer.src = ttsUrl;
-            
-            audioPlayer.play().then(() => {
-                statusMsg.textContent = "Sedang berbicara...";
-            }).catch(error => {
-                console.error("Audio play error:", error);
-                statusMsg.textContent = "Gagal memutar. Ketuk layar atau klik 1 kali lagi untuk mengizinkan audio.";
-                speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            });
+            utterance.onstart = () => {
+                updateStatus('🔊 Sedang berbicara...');
+            };
+
+            utterance.onend = () => {
+                updateStatus('Pemutaran selesai.');
+                playBtn.disabled = false;
+                playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            };
+
+            utterance.onerror = (event) => {
+                console.error('TTS Error:', event);
+                updateStatus('Error saat memutar suara. Coba klik Play lagi.', true);
+                playBtn.disabled = false;
+                playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            };
+
+            // Eksekusi pemutaran
+            try {
+                synth.speak(utterance);
+                // Fix Chrome bug
+                if (synth.paused) {
+                    synth.resume();
+                }
+            } catch (err) {
+                console.error(err);
+                updateStatus('Gagal memanggil engine suara.', true);
+                playBtn.disabled = false;
+                playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         });
-
-        audioPlayer.onended = () => {
-            speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            statusMsg.textContent = "Pemutaran selesai.";
-        };
 
         stopBtn.addEventListener('click', () => {
-            audioPlayer.pause();
-            audioPlayer.currentTime = 0;
-            speakBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            statusMsg.textContent = "Pemutaran dihentikan.";
+            if (synth) {
+                synth.cancel();
+            }
+            updateStatus('Pemutaran dihentikan.');
+            playBtn.disabled = false;
+            playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         });
+
+        // Trigger awal untuk memuat suara browser
+        if (synth && synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = () => {
+                synth.getVoices();
+            };
+        }
     </script>
 </body>
 </html>
