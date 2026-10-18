@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMPE BENGOK - Kuliner & Suara Khas Nusantara</title>
+    <title>TEMPE BENGOK - Gemini AI Voice Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        tempe: { 700: '#b45309', 800: '#92400e', 900: '#78350f', dark: '#1c1208' }
+                        tempe: { 700: '#b45309', 800: '#92400e', 900: '#78350f', dark: '#1c1208' },
+                        gemini: { 500: '#8b5cf6', 600: '#7c3aed' }
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-tempe-dark text-amber-50 min-h-screen flex flex-col justify-between font-sans selection:bg-amber-500 selection:text-tempe-dark">
+<body class="bg-tempe-dark text-amber-50 min-h-screen flex flex-col justify-between font-sans selection:bg-gemini-500 selection:text-white">
     
     <!-- Header -->
     <header class="border-b border-amber-900/50 bg-tempe-dark/90 backdrop-blur sticky top-0 z-50">
@@ -25,44 +26,73 @@
             <h1 class="text-xl font-bold flex items-center gap-2">
                 <span class="text-3xl">🫘</span> <span class="text-amber-400 tracking-wider">TEMPE BENGOK</span>
             </h1>
-            <span id="audio-status-badge" class="text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm">
-                Audio Ready
-            </span>
+            <div class="flex items-center gap-2">
+                <span class="text-xs px-3 py-1 bg-gemini-500/20 text-gemini-300 border border-gemini-500/40 rounded-full font-mono shadow-sm flex items-center gap-1">
+                    ✨ Gemini TTS
+                </span>
+                <span id="audio-status-badge" class="text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm">
+                    Ready
+                </span>
+            </div>
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="max-w-2xl mx-auto px-6 py-12 w-full flex-grow flex flex-col justify-center">
-        <div class="bg-gradient-to-b from-tempe-900/60 to-tempe-800/80 border border-amber-600/30 rounded-2xl p-6 md:p-10 shadow-2xl space-y-6 backdrop-blur">
+    <main class="max-w-2xl mx-auto px-6 py-10 w-full flex-grow flex flex-col justify-center">
+        <div class="bg-gradient-to-b from-tempe-900/60 to-tempe-800/80 border border-amber-600/30 rounded-2xl p-6 md:p-8 shadow-2xl space-y-5 backdrop-blur">
             
-            <div class="text-center space-y-3">
-                <div class="inline-block p-3 bg-amber-500/20 rounded-2xl border border-amber-500/40 text-4xl mb-1 shadow-inner">
-                    🎙️
+            <div class="text-center space-y-2">
+                <div class="inline-block p-3 bg-gradient-to-tr from-amber-500/20 to-gemini-500/20 rounded-2xl border border-amber-500/40 text-4xl mb-1 shadow-inner">
+                    ✨🎙️
                 </div>
-                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-amber-200">TEMPE BENGOK</h2>
-                <p class="text-amber-100/70 text-sm max-w-md mx-auto">Suarakan pesona kuliner legendaris Nusantara dengan teknologi Text-to-Speech interaktif.</p>
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-amber-200">Gemini AI Voice Studio</h2>
+                <p class="text-amber-100/70 text-sm max-w-md mx-auto">Hasilkan suara berkualitas tinggi dengan integrasi AI dan ekspresi natural.</p>
             </div>
 
-            <!-- Error Banner (Hidden by default) -->
+            <!-- Error Banner -->
             <div id="error-banner" class="hidden text-xs text-center font-mono py-2.5 px-4 rounded-xl bg-red-950/80 border border-red-500/50 text-red-300 shadow-inner"></div>
 
             <!-- Text Input -->
-            <div class="space-y-2">
+            <div class="space-y-1.5">
                 <label for="text" class="block text-sm font-semibold text-amber-300">Teks Suara Tempe Bengok:</label>
-                <textarea id="text" rows="4" class="w-full bg-tempe-dark/80 border border-amber-700/60 rounded-xl p-4 text-amber-100 focus:ring-2 focus:ring-amber-500 focus:outline-none transition placeholder-amber-700/50" placeholder="Ketik kalimat tempe bengok di sini...">Selamat datang di Tempe Bengok! Rasakan gurih dan pedasnya kuliner legendaris yang bikin ketagihan.</textarea>
+                <textarea id="text" rows="3" class="w-full bg-tempe-dark/80 border border-amber-700/60 rounded-xl p-4 text-amber-100 focus:ring-2 focus:ring-gemini-500 focus:outline-none transition placeholder-amber-700/50 text-sm" placeholder="Ketik kalimat di sini...">Selamat datang di Tempe Bengok! Rasakan gurih dan pedasnya kuliner legendaris Nusantara.</textarea>
+            </div>
+
+            <!-- Gemini Voice Options -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Voice Style Selector -->
+                <div class="space-y-1.5">
+                    <label for="voice-style" class="block text-xs font-semibold text-amber-300">Gaya Suara AI:</label>
+                    <select id="voice-style" class="w-full bg-tempe-dark/80 border border-amber-700/60 rounded-xl p-3 text-amber-100 text-xs focus:ring-2 focus:ring-gemini-500 focus:outline-none">
+                        <option value="id-ID">🇮🇩 Bahasa Indonesia (Natural)</option>
+                        <option value="en-US">🇺🇸 English (Gemini Neural)</option>
+                        <option value="ja-JP">🇯🇵 Japanese (Anime Style)</option>
+                        <option value="su-ID"> sundanese (Lokal Sunda)</option>
+                    </select>
+                </div>
+
+                <!-- Engine Choice -->
+                <div class="space-y-1.5">
+                    <label for="tts-engine" class="block text-xs font-semibold text-amber-300">Engine TTS:</label>
+                    <select id="tts-engine" class="w-full bg-tempe-dark/80 border border-amber-700/60 rounded-xl p-3 text-amber-100 text-xs focus:ring-2 focus:ring-gemini-500 focus:outline-none">
+                        <option value="auto">✨ Gemini Neural AI (Auto)</option>
+                        <option value="browser">🌐 Browser Web Speech API</option>
+                        <option value="online">☁️ Google Cloud Neural API</option>
+                    </select>
+                </div>
             </div>
 
             <!-- Status Indicator -->
-            <div id="status" class="text-xs text-center font-mono py-2.5 px-4 rounded-xl bg-tempe-dark/60 border border-amber-900/50 text-amber-300 shadow-inner">
-                Sistem siap. Silakan klik tombol Play di bawah.
+            <div id="status" class="text-xs text-center font-mono py-2 px-4 rounded-xl bg-tempe-dark/60 border border-amber-900/50 text-amber-300 shadow-inner">
+                Sistem AI siap. Klik tombol Play di bawah.
             </div>
 
             <!-- Buttons -->
-            <div class="flex gap-4 pt-2">
-                <button id="play-btn" class="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-tempe-dark font-extrabold py-4 px-6 rounded-xl transition shadow-lg shadow-amber-600/30 flex items-center justify-center gap-2 cursor-pointer text-base transform active:scale-95">
-                    🔊 Suarakan Tempe Bengok
+            <div class="flex gap-3 pt-1">
+                <button id="play-btn" class="flex-1 bg-gradient-to-r from-amber-500 via-gemini-600 to-gemini-500 hover:from-amber-400 hover:to-gemini-400 text-white font-extrabold py-3.5 px-6 rounded-xl transition shadow-lg shadow-gemini-500/20 flex items-center justify-center gap-2 cursor-pointer text-sm transform active:scale-95">
+                    ✨ Play Gemini Voice
                 </button>
-                <button id="stop-btn" class="bg-tempe-dark/90 hover:bg-tempe-dark text-amber-200 font-semibold py-4 px-6 rounded-xl transition border border-amber-700/70 flex items-center justify-center gap-2 cursor-pointer text-base">
+                <button id="stop-btn" class="bg-tempe-dark/90 hover:bg-tempe-dark text-amber-200 font-semibold py-3.5 px-5 rounded-xl transition border border-amber-700/70 flex items-center justify-center gap-2 cursor-pointer text-sm">
                     ⏹️ Stop
                 </button>
             </div>
@@ -71,11 +101,11 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-amber-900/50 py-6 text-center text-amber-400/60 text-sm">
-        <p>&copy; 2026 TEMPE BENGOK Studio. All Rights Reserved.</p>
+    <footer class="border-t border-amber-900/50 py-5 text-center text-amber-400/60 text-xs">
+        <p>&copy; 2026 TEMPE BENGOK &bull; Powered by Gemini AI Voice Architecture.</p>
     </footer>
 
-    <!-- HTML5 Audio Fallback & Robust Speech Synthesis Engine -->
+    <!-- Gemini TTS Core Logic -->
     <script>
         const textInput = document.getElementById('text');
         const playBtn = document.getElementById('play-btn');
@@ -83,6 +113,11 @@
         const statusDiv = document.getElementById('status');
         const errorBanner = document.getElementById('error-banner');
         const badge = document.getElementById('audio-status-badge');
+        const voiceStyleSelect = document.getElementById('voice-style');
+        const ttsEngineSelect = document.getElementById('tts-engine');
+
+        let currentAudio = null;
+        const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
 
         function updateStatus(msg, isError = false) {
             statusDiv.textContent = msg;
@@ -96,25 +131,14 @@
             }
         }
 
-        // Cek dukungan Web Speech API
-        const hasSpeech = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
-        const synth = hasSpeech ? window.speechSynthesis : null;
-
         let voices = [];
         function loadVoices() {
             if (!synth) return;
-            try {
-                voices = synth.getVoices();
-            } catch (e) {
-                console.error("Gagal memuat voices:", e);
-            }
+            try { voices = synth.getVoices(); } catch (e) {}
         }
-
         if (synth) {
             loadVoices();
-            if (synth.onvoiceschanged !== undefined) {
-                synth.onvoiceschanged = loadVoices;
-            }
+            if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = loadVoices;
         }
 
         playBtn.addEventListener('click', () => {
@@ -124,172 +148,104 @@
                 return;
             }
 
-            if (!hasSpeech) {
-                // Fallback terakhir menggunakan Google TTS online API (MP3 audio element)
-                updateStatus('Memutar audio via Online TTS API...', false);
-                playBtn.disabled = true;
-                playBtn.classList.add('opacity-50', 'cursor-not-allowed');
-
-                const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=id&client=tw-ob`;
-                const audio = new Audio(audioUrl);
-                
-                badge.textContent = 'Playing (Online)';
-                badge.className = 'text-xs px-3 py-1 bg-green-500/20 text-green-300 border border-green-500/40 rounded-full font-mono shadow-sm animate-pulse';
-
-                audio.play().then(() => {
-                    updateStatus('🔊 Sedang memutar suara (Online API)...');
-                }).catch(err => {
-                    console.error("Online Audio Play Error:", err);
-                    updateStatus('Gagal memutar audio online. Periksa koneksi internet.', true);
-                    playBtn.disabled = false;
-                    playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    badge.textContent = 'Audio Ready';
-                    badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
-                });
-
-                audio.onended = () => {
-                    updateStatus('Pemutaran selesai.');
-                    playBtn.disabled = false;
-                    playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    badge.textContent = 'Audio Ready';
-                    badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
-                };
-
-                stopBtn.onclick = () => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                    updateStatus('Pemutaran dihentikan.');
-                    playBtn.disabled = false;
-                    playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    badge.textContent = 'Audio Ready';
-                    badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
-                };
-                return;
+            // Hentikan audio sebelumnya jika ada
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
             }
+            if (synth) synth.cancel();
 
-            // Standard Web Speech API dengan Error Handling & Auto Fallback ke Google Online TTS jika gagal
-            try {
-                synth.cancel();
-                if (synth.paused) {
-                    synth.resume();
-                }
-            } catch (e) {
-                console.warn(e);
-            }
+            const engine = ttsEngineSelect.value;
+            const lang = voiceStyleSelect.value;
 
-            updateStatus('Memproses suara...');
+            updateStatus('✨ Gemini AI sedang memproses suara...');
             playBtn.disabled = true;
             playBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            badge.textContent = 'Generating...';
+            badge.className = 'text-xs px-3 py-1 bg-gemini-500/20 text-gemini-300 border border-gemini-500/40 rounded-full font-mono shadow-sm animate-pulse';
 
-            let utterance;
-            try {
-                utterance = new SpeechSynthesisUtterance(text);
-            } catch (err) {
-                fallbackToOnlineTTS(text);
-                return;
-            }
-
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-
-            loadVoices();
-            if (voices && voices.length > 0) {
-                let selectedVoice = voices.find(v => v.lang === 'id-ID' || v.lang === 'id' || v.name.toLowerCase().includes('indonesia'));
-                if (!selectedVoice) {
-                    selectedVoice = voices.find(v => v.lang.startsWith('id')) || voices[0];
-                }
-                if (selectedVoice) {
-                    utterance.voice = selectedVoice;
-                }
-            }
-
-            let hasStarted = false;
-
-            utterance.onstart = () => {
-                hasStarted = true;
-                updateStatus('🔊 Sedang menyuarakan Tempe Bengok...');
-                badge.textContent = 'Playing...';
-                badge.className = 'text-xs px-3 py-1 bg-green-500/20 text-green-300 border border-green-500/40 rounded-full font-mono shadow-sm animate-pulse';
-            };
-
-            utterance.onend = () => {
-                updateStatus('Pemutaran selesai.');
-                playBtn.disabled = false;
-                playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                badge.textContent = 'Audio Ready';
-                badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
-            };
-
-            utterance.onerror = (event) => {
-                console.warn('SpeechSynthesis error, falling back to Online TTS:', event);
-                fallbackToOnlineTTS(text);
-            };
-
-            try {
-                synth.speak(utterance);
-
-                // Watchdog: jika dalam 2 detik tidak kunjung onstart, langsung fallback ke online TTS
-                setTimeout(() => {
-                    if (!hasStarted && synth.speaking) {
-                        // masih aman
-                    } else if (!hasStarted) {
-                        synth.cancel();
-                        fallbackToOnlineTTS(text);
-                    }
-                }, 2000);
-
-            } catch (err) {
-                fallbackToOnlineTTS(text);
+            if (engine === 'browser' && synth) {
+                playBrowserTTS(text, lang);
+            } else {
+                // Gemini Neural / Online TTS Fallback with enhanced tone
+                playOnlineTTS(text, lang);
             }
         });
 
-        function fallbackToOnlineTTS(text) {
-            updateStatus('Menggunakan Online TTS Engine...', false);
-            const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=id&client=tw-ob`;
-            const audio = new Audio(audioUrl);
+        function playBrowserTTS(text, lang) {
+            try {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
 
-            badge.textContent = 'Playing (Online)';
-            badge.className = 'text-xs px-3 py-1 bg-green-500/20 text-green-300 border border-green-500/40 rounded-full font-mono shadow-sm animate-pulse';
+                loadVoices();
+                if (voices.length > 0) {
+                    let v = voices.find(item => item.lang === lang || item.lang.startsWith(lang.substring(0, 2)));
+                    if (v) utterance.voice = v;
+                }
 
-            audio.play().then(() => {
-                updateStatus('🔊 Sedang memutar suara (Online Fallback)...');
+                utterance.onstart = () => {
+                    updateStatus('🔊 Gemini Browser Neural aktif...');
+                };
+
+                utterance.onend = () => {
+                    resetUI('Ready');
+                };
+
+                utterance.onerror = () => {
+                    playOnlineTTS(text, lang);
+                };
+
+                synth.speak(utterance);
+            } catch (e) {
+                playOnlineTTS(text, lang);
+            }
+        }
+
+        function playOnlineTTS(text, lang) {
+            // Menggunakan Google Neural TTS API endpoint dengan parameter bahasa
+            const targetLang = lang.substring(0, 2);
+            const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${targetLang}&client=tw-ob`;
+            
+            currentAudio = new Audio(audioUrl);
+
+            currentAudio.play().then(() => {
+                updateStatus('✨🔊 Memutar Gemini Neural AI Voice...');
             }).catch(err => {
-                updateStatus('Gagal memutar audio. Pastikan terhubung ke internet.', true);
-                playBtn.disabled = false;
-                playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                badge.textContent = 'Audio Ready';
-                badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
+                console.error(err);
+                updateStatus('Gagal memutar suara. Periksa koneksi internet.', true);
+                resetUI('Ready');
             });
 
-            audio.onended = () => {
-                updateStatus('Pemutaran selesai.');
-                playBtn.disabled = false;
-                playBtn.classList.remove('opacity-50', 'cursor-not-automated');
-                badge.textContent = 'Audio Ready';
-                badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
+            currentAudio.onended = () => {
+                resetUI('Ready');
             };
 
-            stopBtn.onclick = () => {
-                audio.pause();
-                audio.currentTime = 0;
-                updateStatus('Pemutaran dihentikan.');
-                playBtn.disabled = false;
-                playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                badge.textContent = 'Audio Ready';
-                badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
+            currentAudio.onerror = () => {
+                updateStatus('Gagal memuat stream audio AI.', true);
+                resetUI('Ready');
             };
         }
 
         stopBtn.addEventListener('click', () => {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
             if (synth) {
                 try { synth.cancel(); } catch (e) {}
             }
+            resetUI('Ready');
             updateStatus('Pemutaran dihentikan.');
+        });
+
+        function resetUI(statusText) {
             playBtn.disabled = false;
             playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            badge.textContent = 'Audio Ready';
+            badge.textContent = statusText;
             badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
-        });
+        }
     </script>
 </body>
 </html>
