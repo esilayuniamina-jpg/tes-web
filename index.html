@@ -17,7 +17,7 @@
         }
     </script>
 </head>
-<body class="bg-tempe-dark text-amber-50 min-h-screen flex flex-col justify-between font-sans">
+<body class="bg-tempe-dark text-amber-50 min-h-screen flex flex-col justify-between font-sans selection:bg-amber-500 selection:text-tempe-dark">
     
     <!-- Header -->
     <header class="border-b border-amber-900/50 bg-tempe-dark/90 backdrop-blur sticky top-0 z-50">
@@ -42,6 +42,9 @@
                 <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-amber-200">TEMPE BENGOK</h2>
                 <p class="text-amber-100/70 text-sm max-w-md mx-auto">Suarakan pesona kuliner legendaris Nusantara dengan teknologi Text-to-Speech interaktif.</p>
             </div>
+
+            <!-- Error Banner (Hidden by default) -->
+            <div id="error-banner" class="hidden text-xs text-center font-mono py-2.5 px-4 rounded-xl bg-red-950/80 border border-red-500/50 text-red-300 shadow-inner"></div>
 
             <!-- Text Input -->
             <div class="space-y-2">
@@ -72,26 +75,46 @@
         <p>&copy; 2026 TEMPE BENGOK Studio. All Rights Reserved.</p>
     </footer>
 
-    <!-- Core Robust Logic Fix -->
+    <!-- Bulletproof Robust Logic -->
     <script>
         const textInput = document.getElementById('text');
         const playBtn = document.getElementById('play-btn');
         const stopBtn = document.getElementById('stop-btn');
         const statusDiv = document.getElementById('status');
+        const errorBanner = document.getElementById('error-banner');
         const badge = document.getElementById('audio-status-badge');
 
         const synth = window.speechSynthesis;
 
         function updateStatus(msg, isError = false) {
             statusDiv.textContent = msg;
-            statusDiv.className = `text-xs text-center font-mono py-2.5 px-4 rounded-xl bg-tempe-dark/60 border ${isError ? 'border-red-500/50 text-red-400' : 'border-amber-900/50 text-amber-300'}`;
+            if (isError) {
+                errorBanner.textContent = msg;
+                errorBanner.classList.remove('hidden');
+                statusDiv.classList.add('hidden');
+            } else {
+                errorBanner.classList.add('hidden');
+                statusDiv.classList.remove('hidden');
+            }
         }
 
-        // Fix Chrome voice list loading bug
+        // Cek dukungan browser secara menyeluruh
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!synth) {
+                updateStatus('Peringatan: Browser Anda tidak mendukung Speech Synthesis API.', true);
+                playBtn.disabled = true;
+                playBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        });
+
         let voices = [];
         function loadVoices() {
             if (!synth) return;
-            voices = synth.getVoices();
+            try {
+                voices = synth.getVoices();
+            } catch (e) {
+                console.error("Gagal memuat voices:", e);
+            }
         }
 
         loadVoices();
@@ -107,36 +130,46 @@
             }
 
             if (!synth) {
-                updateStatus('Error: Browser Anda tidak mendukung Web Speech API.', true);
+                alert('Browser Anda tidak mendukung fitur suara.');
                 return;
             }
 
-            // Fix stuck queue & resume audio context
+            // Tangani error jika synth sedang error atau macet
             try {
                 synth.cancel();
                 if (synth.paused) {
                     synth.resume();
                 }
-            } catch (e) {
-                console.error(e);
+            } catch (err) {
+                console.warn("Cancel/Resume warning:", err);
             }
 
-            updateStatus('Memulai pemutaran...');
+            updateStatus('Memproses suara...');
             playBtn.disabled = true;
             playBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-            const utterance = new SpeechSynthesisUtterance(text);
+            let utterance;
+            try {
+                utterance = new SpeechSynthesisUtterance(text);
+            } catch (err) {
+                updateStatus('Gagal membuat objek suara: ' + err.message, true);
+                playBtn.disabled = false;
+                playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
 
-            // Smart Voice Selector (Indonesian -> Default fallback)
             loadVoices();
-            let selectedVoice = voices.find(v => v.lang === 'id-ID' || v.lang === 'id' || v.name.toLowerCase().includes('indonesia'));
-            if (!selectedVoice && voices.length > 0) {
-                selectedVoice = voices.find(v => v.lang.startsWith('id')) || voices[0];
-            }
-            if (selectedVoice) {
-                utterance.voice = selectedVoice;
+            if (voices && voices.length > 0) {
+                let selectedVoice = voices.find(v => v.lang === 'id-ID' || v.lang === 'id' || v.name.toLowerCase().includes('indonesia'));
+                if (!selectedVoice) {
+                    selectedVoice = voices.find(v => v.lang.startsWith('id')) || voices[0];
+                }
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
             }
 
             utterance.onstart = () => {
@@ -154,52 +187,65 @@
             };
 
             utterance.onerror = (event) => {
-                console.error('TTS Error:', event);
-                // Fallback attempt with default utterance if specific voice fails
-                updateStatus('Mencoba ulang dengan engine default...', false);
+                console.error('TTS Error event:', event);
+                updateStatus('Terjadi kendala saat memutar suara. Mencoba ulang...', false);
+                
+                // Fallback attempt
                 try {
                     const fallback = new SpeechSynthesisUtterance(text);
                     synth.speak(fallback);
-                } catch (err2) {
-                    updateStatus('Gagal memutar suara di browser ini.', true);
+                } catch (e) {
+                    updateStatus('Gagal total memutar suara di browser ini.', true);
                 }
+
                 playBtn.disabled = false;
                 playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 badge.textContent = 'Audio Ready';
                 badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
             };
 
-            // Bulletproof execution with interval check for Chrome bug where speak() gets stuck
+            // Eksekusi pemutaran dengan pengaman catch
             try {
                 synth.speak(utterance);
-                
-                // Chrome fix: watchdog timer to resume if paused or stuck
-                let elapsed = 0;
+
+                // Watchdog untuk menghindari Chrome bug yang freeze di tengah jalan
+                let timer = 0;
                 const watchdog = setInterval(() => {
                     if (!synth.speaking) {
                         clearInterval(watchdog);
                         return;
                     }
-                    elapsed += 200;
+                    timer += 250;
                     if (synth.paused) {
                         synth.resume();
                     }
-                    if (elapsed > 10000) { // Safety timeout 10s
+                    if (timer > 15000) { // Max 15 detik timeout pengaman
                         clearInterval(watchdog);
+                        synth.cancel();
+                        playBtn.disabled = false;
+                        playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        badge.textContent = 'Audio Ready';
+                        badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
                     }
-                }, 200);
+                }, 250);
 
             } catch (err) {
-                console.error(err);
-                updateStatus('Gagal memanggil engine suara.', true);
+                console.error('Speak invocation error:', err);
+                updateStatus('Gagal memanggil engine suara: ' + err.message, true);
                 playBtn.disabled = false;
                 playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                badge.textContent = 'Audio Ready';
+                badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
             }
         });
 
         stopBtn.addEventListener('click', () => {
             if (synth) {
-                synth.cancel();
+                try {
+                    synth.cancel();
+                } catch (e) {
+                    console.error(e);
+                }
             }
             updateStatus('Pemutaran dihentikan.');
             playBtn.disabled = false;
