@@ -25,8 +25,8 @@
             <h1 class="text-xl font-bold flex items-center gap-2">
                 <span class="text-3xl">🫘</span> <span class="text-amber-400 tracking-wider">TEMPE BENGOK</span>
             </h1>
-            <span class="text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm">
-                Voice & Culinary Studio
+            <span id="audio-status-badge" class="text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm">
+                Audio Ready
             </span>
         </div>
     </header>
@@ -72,18 +72,31 @@
         <p>&copy; 2026 TEMPE BENGOK Studio. All Rights Reserved.</p>
     </footer>
 
-    <!-- Core Logic -->
+    <!-- Core Robust Logic Fix -->
     <script>
         const textInput = document.getElementById('text');
         const playBtn = document.getElementById('play-btn');
         const stopBtn = document.getElementById('stop-btn');
         const statusDiv = document.getElementById('status');
+        const badge = document.getElementById('audio-status-badge');
 
         const synth = window.speechSynthesis;
 
         function updateStatus(msg, isError = false) {
             statusDiv.textContent = msg;
             statusDiv.className = `text-xs text-center font-mono py-2.5 px-4 rounded-xl bg-tempe-dark/60 border ${isError ? 'border-red-500/50 text-red-400' : 'border-amber-900/50 text-amber-300'}`;
+        }
+
+        // Fix Chrome voice list loading bug
+        let voices = [];
+        function loadVoices() {
+            if (!synth) return;
+            voices = synth.getVoices();
+        }
+
+        loadVoices();
+        if (synth && synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = loadVoices;
         }
 
         playBtn.addEventListener('click', () => {
@@ -98,46 +111,84 @@
                 return;
             }
 
-            synth.cancel();
+            // Fix stuck queue & resume audio context
+            try {
+                synth.cancel();
+                if (synth.paused) {
+                    synth.resume();
+                }
+            } catch (e) {
+                console.error(e);
+            }
 
             updateStatus('Memulai pemutaran...');
             playBtn.disabled = true;
             playBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'id-ID';
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
 
-            const voices = synth.getVoices();
-            const idVoice = voices.find(v => v.lang.toLowerCase().includes('id') || v.name.toLowerCase().includes('indonesia'));
-            
-            if (idVoice) {
-                utterance.voice = idVoice;
+            // Smart Voice Selector (Indonesian -> Default fallback)
+            loadVoices();
+            let selectedVoice = voices.find(v => v.lang === 'id-ID' || v.lang === 'id' || v.name.toLowerCase().includes('indonesia'));
+            if (!selectedVoice && voices.length > 0) {
+                selectedVoice = voices.find(v => v.lang.startsWith('id')) || voices[0];
+            }
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
             }
 
             utterance.onstart = () => {
                 updateStatus('🔊 Sedang menyuarakan Tempe Bengok...');
+                badge.textContent = 'Playing...';
+                badge.className = 'text-xs px-3 py-1 bg-green-500/20 text-green-300 border border-green-500/40 rounded-full font-mono shadow-sm animate-pulse';
             };
 
             utterance.onend = () => {
                 updateStatus('Pemutaran selesai.');
                 playBtn.disabled = false;
                 playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                badge.textContent = 'Audio Ready';
+                badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
             };
 
             utterance.onerror = (event) => {
                 console.error('TTS Error:', event);
-                updateStatus('Error saat memutar suara. Coba klik Play lagi.', true);
+                // Fallback attempt with default utterance if specific voice fails
+                updateStatus('Mencoba ulang dengan engine default...', false);
+                try {
+                    const fallback = new SpeechSynthesisUtterance(text);
+                    synth.speak(fallback);
+                } catch (err2) {
+                    updateStatus('Gagal memutar suara di browser ini.', true);
+                }
                 playBtn.disabled = false;
                 playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                badge.textContent = 'Audio Ready';
+                badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
             };
 
+            // Bulletproof execution with interval check for Chrome bug where speak() gets stuck
             try {
                 synth.speak(utterance);
-                if (synth.paused) {
-                    synth.resume();
-                }
+                
+                // Chrome fix: watchdog timer to resume if paused or stuck
+                let elapsed = 0;
+                const watchdog = setInterval(() => {
+                    if (!synth.speaking) {
+                        clearInterval(watchdog);
+                        return;
+                    }
+                    elapsed += 200;
+                    if (synth.paused) {
+                        synth.resume();
+                    }
+                    if (elapsed > 10000) { // Safety timeout 10s
+                        clearInterval(watchdog);
+                    }
+                }, 200);
+
             } catch (err) {
                 console.error(err);
                 updateStatus('Gagal memanggil engine suara.', true);
@@ -153,13 +204,9 @@
             updateStatus('Pemutaran dihentikan.');
             playBtn.disabled = false;
             playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            badge.textContent = 'Audio Ready';
+            badge.className = 'text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm';
         });
-
-        if (synth && synth.onvoiceschanged !== undefined) {
-            synth.onvoiceschanged = () => {
-                synth.getVoices();
-            };
-        }
     </script>
 </body>
 </html>
