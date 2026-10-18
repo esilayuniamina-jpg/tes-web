@@ -73,7 +73,7 @@
         <p>&copy; 2026 TEMPE BENGOK &bull; Powered by Google TTS Engine.</p>
     </footer>
 
-    <!-- Google TTS Core Script (Tanpa Tes Nada) -->
+    <!-- Google TTS & Web Speech Hybrid Dual Engine Script -->
     <script>
         const textInput = document.getElementById('text');
         const playBtn = document.getElementById('play-btn');
@@ -94,25 +94,27 @@
                 currentAudio.pause();
                 currentAudio = null;
             }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
 
-            statusDiv.textContent = '🔊 Menghubungkan ke Google TTS...';
+            statusDiv.textContent = '🔊 Memuat Google TTS...';
             playBtn.disabled = true;
             playBtn.classList.add('opacity-50', 'cursor-not-allowed');
             badge.textContent = 'Streaming...';
             badge.className = 'text-xs px-3 py-1 bg-green-500/20 text-green-300 border border-green-500/40 rounded-full font-mono shadow-sm animate-pulse';
 
-            // Google TTS endpoint URL yang aman & stabil
+            // Metode 1: Google TTS Audio Stream via CORS proxy/direct endpoint
             const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=id&client=tw-ob`;
 
-            currentAudio = new Audio(url);
-            currentAudio.crossOrigin = "anonymous";
+            currentAudio = new Audio();
+            currentAudio.src = url;
 
             currentAudio.play().then(() => {
                 statusDiv.textContent = '🔊 Sedang memutar suara Google TTS...';
             }).catch(err => {
-                console.error("Audio play error:", err);
-                statusDiv.textContent = 'Gagal memutar audio. Pastikan terhubung ke internet.';
-                resetState();
+                console.warn("Audio stream blocked, switching to Native Speech Synthesis fallback...", err);
+                tryNativeSpeech(text);
             });
 
             currentAudio.onended = () => {
@@ -121,15 +123,56 @@
             };
 
             currentAudio.onerror = () => {
-                statusDiv.textContent = 'Error: Gagal memuat stream Google TTS.';
-                resetState();
+                console.warn("Audio stream error, switching to Native Speech Synthesis fallback...");
+                tryNativeSpeech(text);
             };
         });
+
+        function tryNativeSpeech(text) {
+            if (!('speechSynthesis' in window)) {
+                statusDiv.textContent = 'Gagal: Browser tidak mendukung pemutaran suara.';
+                resetState();
+                return;
+            }
+
+            try {
+                statusDiv.textContent = '🔊 Memutar via Browser Speech Engine...';
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+
+                const voices = window.speechSynthesis.getVoices();
+                const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
+                if (idVoice) utterance.voice = idVoice;
+
+                utterance.onend = () => {
+                    statusDiv.textContent = 'Pemutaran selesai.';
+                    resetState();
+                };
+
+                utterance.onerror = () => {
+                    statusDiv.textContent = 'Gagal memutar suara. Periksa volume perangkat.';
+                    resetState();
+                };
+
+                window.speechSynthesis.speak(utterance);
+                if (window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
+                }
+            } catch (e) {
+                statusDiv.textContent = 'Gagal total memutar suara: ' + e.message;
+                resetState();
+            }
+        }
 
         stopBtn.addEventListener('click', () => {
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio = null;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
             }
             statusDiv.textContent = 'Pemutaran dihentikan.';
             resetState();
