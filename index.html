@@ -3,60 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMPE BENGOK</title>
+    <title>TEMPE BENGOK - Kuliner & Suara Khas Nusantara</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        navy: { 800: '#1e293b', 900: '#0f172a' }
+                        tempe: { 700: '#b45309', 800: '#92400e', 900: '#78350f', dark: '#1c1208' }
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-navy-900 text-white min-h-screen flex flex-col justify-between font-sans">
+<body class="bg-tempe-dark text-amber-50 min-h-screen flex flex-col justify-between font-sans">
     
     <!-- Header -->
-    <header class="border-b border-gray-800 bg-navy-900/90 backdrop-blur sticky top-0 z-50">
+    <header class="border-b border-amber-900/50 bg-tempe-dark/90 backdrop-blur sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <h1 class="text-xl font-bold flex items-center gap-2">
-                ⚡ <span class="text-cyan-400">TEMPE BENGOK</span>
+                <span class="text-3xl">🫘</span> <span class="text-amber-400 tracking-wider">TEMPE BENGOK</span>
             </h1>
-            <span class="text-xs px-3 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full font-mono">
-                HTML5 Web Audio API
+            <span class="text-xs px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full font-mono shadow-sm">
+                Voice & Culinary Studio
             </span>
         </div>
     </header>
 
     <!-- Main Container -->
     <main class="max-w-2xl mx-auto px-6 py-12 w-full flex-grow flex flex-col justify-center">
-        <div class="bg-navy-800 border border-gray-700/50 rounded-2xl p-6 md:p-8 shadow-2xl space-y-6">
+        <div class="bg-gradient-to-b from-tempe-900/60 to-tempe-800/80 border border-amber-600/30 rounded-2xl p-6 md:p-10 shadow-2xl space-y-6 backdrop-blur">
             
-            <div class="text-center space-y-2">
-                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">TEMPE BENGOK</h2>
-                <p class="text-gray-400 text-sm">Ketik teks apa saja di bawah dan klik tombol Play untuk mulai mendengarkan suara.</p>
+            <div class="text-center space-y-3">
+                <div class="inline-block p-3 bg-amber-500/20 rounded-2xl border border-amber-500/40 text-4xl mb-1 shadow-inner">
+                    🎙️
+                </div>
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-amber-200">TEMPE BENGOK</h2>
+                <p class="text-amber-100/70 text-sm max-w-md mx-auto">Suarakan pesona kuliner legendaris Nusantara dengan teknologi Text-to-Speech interaktif.</p>
             </div>
 
             <!-- Text Input -->
             <div class="space-y-2">
-                <label for="text" class="block text-sm font-medium text-cyan-400">Teks yang akan diucapkan:</label>
-                <textarea id="text" rows="4" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-4 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none transition" placeholder="Ketik sesuatu di sini...">Halo! Ini adalah TEMPE BENGOK yang siap disuarakan untuk Anda.</textarea>
+                <label for="text" class="block text-sm font-semibold text-amber-300">Teks Suara Tempe Bengok:</label>
+                <textarea id="text" rows="4" class="w-full bg-tempe-dark/80 border border-amber-700/60 rounded-xl p-4 text-amber-100 focus:ring-2 focus:ring-amber-500 focus:outline-none transition placeholder-amber-700/50" placeholder="Ketik kalimat tempe bengok di sini...">Selamat datang di Tempe Bengok! Rasakan gurih dan pedasnya kuliner legendaris yang bikin ketagihan.</textarea>
             </div>
 
             <!-- Status Indicator -->
-            <div id="status" class="text-xs text-center font-mono py-2 px-3 rounded-lg bg-gray-900/60 border border-gray-800 text-cyan-300">
+            <div id="status" class="text-xs text-center font-mono py-2.5 px-4 rounded-xl bg-tempe-dark/60 border border-amber-900/50 text-amber-300 shadow-inner">
                 Sistem siap. Silakan klik tombol Play di bawah.
             </div>
 
             <!-- Buttons -->
             <div class="flex gap-4 pt-2">
-                <button id="play-btn" class="flex-1 bg-cyan-500 hover:bg-cyan-600 text-gray-950 font-bold py-4 px-6 rounded-xl transition shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 cursor-pointer text-base">
-                    🔊 Play Suara
+                <button id="play-btn" class="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-tempe-dark font-extrabold py-4 px-6 rounded-xl transition shadow-lg shadow-amber-600/30 flex items-center justify-center gap-2 cursor-pointer text-base transform active:scale-95">
+                    🔊 Suarakan Tempe Bengok
                 </button>
-                <button id="stop-btn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold py-4 px-6 rounded-xl transition border border-gray-700 flex items-center justify-center gap-2 cursor-pointer text-base">
+                <button id="stop-btn" class="bg-tempe-dark/90 hover:bg-tempe-dark text-amber-200 font-semibold py-4 px-6 rounded-xl transition border border-amber-700/70 flex items-center justify-center gap-2 cursor-pointer text-base">
                     ⏹️ Stop
                 </button>
             </div>
@@ -65,23 +68,22 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-gray-800 py-6 text-center text-gray-500 text-sm">
-        <p>&copy; 2026 TEMPE BENGOK. Engineered for Excellence.</p>
+    <footer class="border-t border-amber-900/50 py-6 text-center text-amber-400/60 text-sm">
+        <p>&copy; 2026 TEMPE BENGOK Studio. All Rights Reserved.</p>
     </footer>
 
-    <!-- Core Logic: Rombak Total Bersih & Minimalis -->
+    <!-- Core Logic -->
     <script>
         const textInput = document.getElementById('text');
         const playBtn = document.getElementById('play-btn');
         const stopBtn = document.getElementById('stop-btn');
         const statusDiv = document.getElementById('status');
 
-        // Pastikan browser mendukung SpeechSynthesis
         const synth = window.speechSynthesis;
 
         function updateStatus(msg, isError = false) {
             statusDiv.textContent = msg;
-            statusDiv.className = `text-xs text-center font-mono py-2 px-3 rounded-lg bg-gray-900/60 border ${isError ? 'border-red-500/50 text-red-400' : 'border-gray-800 text-cyan-300'}`;
+            statusDiv.className = `text-xs text-center font-mono py-2.5 px-4 rounded-xl bg-tempe-dark/60 border ${isError ? 'border-red-500/50 text-red-400' : 'border-amber-900/50 text-amber-300'}`;
         }
 
         playBtn.addEventListener('click', () => {
@@ -96,7 +98,6 @@
                 return;
             }
 
-            // Hentikan suara yang sedang berjalan
             synth.cancel();
 
             updateStatus('Memulai pemutaran...');
@@ -108,7 +109,6 @@
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
 
-            // Ambil suara yang tersedia di device
             const voices = synth.getVoices();
             const idVoice = voices.find(v => v.lang.toLowerCase().includes('id') || v.name.toLowerCase().includes('indonesia'));
             
@@ -117,7 +117,7 @@
             }
 
             utterance.onstart = () => {
-                updateStatus('🔊 Sedang berbicara...');
+                updateStatus('🔊 Sedang menyuarakan Tempe Bengok...');
             };
 
             utterance.onend = () => {
@@ -133,10 +133,8 @@
                 playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             };
 
-            // Eksekusi pemutaran
             try {
                 synth.speak(utterance);
-                // Fix Chrome bug
                 if (synth.paused) {
                     synth.resume();
                 }
@@ -157,7 +155,6 @@
             playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         });
 
-        // Trigger awal untuk memuat suara browser
         if (synth && synth.onvoiceschanged !== undefined) {
             synth.onvoiceschanged = () => {
                 synth.getVoices();
